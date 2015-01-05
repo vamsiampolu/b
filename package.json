@@ -32,6 +32,10 @@
       "depends": [
         "jquery:jQuery"
       ]
+    },
+    "semantic-ui":{
+      "depends":["jquery:jQuery"]
+        
     }
   }
 }
