@@ -12,6 +12,7 @@
 
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -55,6 +56,62 @@
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+        <div id="app">
+            <div class="container">
+                <div class="col-sm-4 col-sm-push-3">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                Add new Contact   
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" id="contact-create-form">
+                                <div class="form-group">
+                                    <label for="contact-create-name" class="col-sm-4  control-label">Name</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <span class="glyphicon glyphicon-user"></span>
+                                            </div>
+                                            <input type="text" class="form-control" id="contact-create-name" name="contact-create-name" placeholder="Contact's Name"/>    
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-create-phone" class="col-sm-4  control-label">Phone</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <span class="glyphicon glyphicon-phone"></span>
+                                            </div>
+                                            <input type="tel" class="form-control" id="contact-create-phone" name="contact-create-phone" placeholder="Phone Number"/>    
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-create-email" class="col-sm-4  control-label">Email</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <span class="glyphicon glyphicon-envelope"></span>
+                                            </div>
+                                            <input type="email" class="form-control" id="contact-create-email" name="contact-create-email" placeholder="Email"/>    
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-4 col-sm-8">
+                                      <button type="submit" class="btn btn-success" data-toggle="tooltip" title="Yep! Two exclamations and a question mark,arent you excited?">Add contact!</button>
+                                    </div>
+                              </div>
+                            </form>        
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
         <script src="bundle.js"></script>
     </body>
 </html>

@@ -1,9 +1,28 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Contact=require('./contactModel');
+var AppView=require('./appView');
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());
 
-},{"./contactModel":2}],2:[function(require,module,exports){
+},{"./appView":2,"./contactModel":3}],2:[function(require,module,exports){
+var Backbone=require('./init');
+module.exports=Backbone.View.extend({
+	el:'#app',
+	initialize:function initAppView(){
+		console.log('Inside initialize');
+		this.$createForm=this.$('#contact-create-form');
+		console.log(this.$createForm);
+	},
+	isValid:function isValid(){
+		console.log("Inside isValid");
+		console.log($(this));
+		$(this).is(':invalid').addClass('has-error');
+	},
+	events:{
+		'#contact-create-form input blur':'isValid'
+	}
+});
+},{"./init":4}],3:[function(require,module,exports){
 var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
@@ -14,7 +33,7 @@ module.exports=Backbone.Model.extend({
 	}
 });
 
-},{"./init":3}],3:[function(require,module,exports){
+},{"./init":4}],4:[function(require,module,exports){
 /*
 	responsible for loading bootstrap,jQuery,Backbone and any Backbone plugins if required
 */
@@ -25,7 +44,7 @@ var Backbone=require('Backbone');
 Backbone.$=$;
 
 module.exports=Backbone;
-},{"Backbone":4,"bootstrap":6,"jquery":7}],4:[function(require,module,exports){
+},{"Backbone":5,"bootstrap":7,"jquery":8}],5:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -1635,7 +1654,7 @@ module.exports=Backbone;
 
 }));
 
-},{"underscore":5}],5:[function(require,module,exports){
+},{"underscore":6}],6:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -3052,7 +3071,7 @@ module.exports=Backbone;
   }
 }.call(this));
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -5381,7 +5400,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":7}],7:[function(require,module,exports){
+},{"jquery":8}],8:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
