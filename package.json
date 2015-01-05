@@ -1,0 +1,36 @@
+{
+  "name": "BrowserifyTest",
+  "version": "1.0.0",
+  "description": "Testing to see if browserify-shim can be used to load bootstrap,semantic-ui or backbone",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "vamsiampolu",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^8.0.3",
+    "browserify-shim": "^3.8.2",
+    "hbsfy": "^2.2.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.1",
+    "jquery": "^2.1.3"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browser": {
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.min.js",
+    "jquery": "./node_modules/jquery/dist/jquery.min.js"
+  },
+  "browserify-shim": {
+    "bootstrap": {
+      "depends": [
+        "jquery:$"
+      ]
+    }
+  }
+}
