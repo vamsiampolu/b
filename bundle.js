@@ -1,28 +1,321 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Contact=require('./contactModel');
 var AppView=require('./appView');
+
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());
 
-},{"./appView":2,"./contactModel":3}],2:[function(require,module,exports){
+},{"./appView":2,"./contactModel":4}],2:[function(require,module,exports){
 var Backbone=require('./init');
-module.exports=Backbone.View.extend({
+var $=require('jquery');
+var Contact=require('./contactModel.js');
+var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
 		console.log('Inside initialize');
 		this.$createForm=this.$('#contact-create-form');
-		console.log(this.$createForm);
 	},
-	isValid:function isValid(){
-		console.log("Inside isValid");
-		console.log($(this));
-		$(this).is(':invalid').addClass('has-error');
+	submitForm:function submitCreateForm(e){
+		e.preventDefault();
+		var data={};
+		$('#contact-create-form').find('input').each(function(){
+			var dataMapping={
+				text:'name',
+				tel:'phone',
+				email:'email'
+			};
+			var key=dataMapping[$(this).attr('type')];
+			data[key]=$(this).val(); 
+		});
+		var model=new Contact(data);
+		console.log(model.toJSON());
 	},
 	events:{
-		'#contact-create-form input blur':'isValid'
+		'click #contact-create-form button':'submitForm'
 	}
 });
-},{"./init":4}],3:[function(require,module,exports){
+
+module.exports=new appView();
+},{"./contactModel.js":4,"./init":5,"jquery":9}],3:[function(require,module,exports){
+(function (global){
+
+; jQuery = global.jQuery = require("jquery");
+require("e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js");
+;__browserify_shim_require__=require;(function browserifyShim(module, define, require) {
+/*!
+ * Validator v0.6.0 for Bootstrap 3, by @1000hz
+ * Copyright 2014 Spiceworks, Inc.
+ * Licensed under http://opensource.org/licenses/MIT
+ *
+ * https://github.com/1000hz/bootstrap-validator
+ */
+
++function ($) {
+  'use strict';
+
+  // VALIDATOR CLASS DEFINITION
+  // ==========================
+
+  var Validator = function (element, options) {
+    this.$element = $(element)
+    this.options  = options
+
+    this.$element.attr('novalidate', true) // disable automatic native validation
+    this.toggleSubmit()
+
+    this.$element.on('input.bs.validator change.bs.validator focusout.bs.validator', $.proxy(this.validateInput, this))
+    this.$element.on('submit.bs.validator', $.proxy(this.onSubmit, this))
+
+    this.$element.find('[data-match]').each(function () {
+      var $this  = $(this)
+      var target = $this.data('match')
+
+      $(target).on('input.bs.validator', function (e) {
+        $this.val() && $this.trigger('input')
+      })
+    })
+  }
+
+  Validator.DEFAULTS = {
+    delay: 500,
+    html: false,
+    disable: true,
+    errors: {
+      match: 'Does not match',
+      minlength: 'Not long enough'
+    }
+  }
+
+  Validator.VALIDATORS = {
+    native: function ($el) {
+      var el = $el[0]
+      return el.checkValidity ? el.checkValidity() : true
+    },
+    match: function ($el) {
+      var target = $el.data('match')
+      return !$el.val() || $el.val() === $(target).val()
+    },
+    minlength: function ($el) {
+      var minlength = $el.data('minlength')
+      return !$el.val() || $el.val().length >= minlength
+    }
+  }
+
+  Validator.prototype.validateInput = function (e) {
+    var $el        = $(e.target)
+    var prevErrors = $el.data('bs.validator.errors')
+    var errors
+
+    if ($el.is('[type="radio"]')) $el = this.$element.find('input[name="' + $el.attr('name') + '"]')
+
+    this.$element.trigger(e = $.Event('validate.bs.validator', {relatedTarget: $el[0]}))
+
+    if (e.isDefaultPrevented()) return
+
+    var self = this
+
+    this.runValidators($el).done(function (errors) {
+      $el.data('bs.validator.errors', errors)
+
+      errors.length ? self.showErrors($el) : self.clearErrors($el)
+
+      if (!prevErrors || errors.toString() !== prevErrors.toString()) {
+        e = errors.length
+          ? $.Event('invalid.bs.validator', {relatedTarget: $el[0], detail: errors})
+          : $.Event('valid.bs.validator', {relatedTarget: $el[0], detail: prevErrors})
+
+        self.$element.trigger(e)
+      }
+
+      self.toggleSubmit()
+
+      self.$element.trigger($.Event('validated.bs.validator', {relatedTarget: $el[0]}))
+    })
+  }
+
+
+  Validator.prototype.runValidators = function ($el) {
+    var errors     = []
+    var validators = [Validator.VALIDATORS.native]
+    var deferred   = $.Deferred()
+    var options    = this.options
+
+    $el.data('bs.validator.deferred') && $el.data('bs.validator.deferred').reject()
+    $el.data('bs.validator.deferred', deferred)
+
+    function getErrorMessage(key) {
+      return $el.data(key + '-error')
+        || $el.data('error')
+        || key == 'native' && $el[0].validationMessage
+        || options.errors[key]
+    }
+
+    $.each(Validator.VALIDATORS, $.proxy(function (key, validator) {
+      if (($el.data(key) || key == 'native') && !validator.call(this, $el)) {
+        var error = getErrorMessage(key)
+        !~errors.indexOf(error) && errors.push(error)
+      }
+    }, this))
+
+    if (!errors.length && $el.val() && $el.data('remote')) {
+      this.defer($el, function () {
+        $.get($el.data('remote'), [$el.attr('name'), $el.val()].join('='))
+          .fail(function (jqXHR, textStatus, error) { errors.push(getErrorMessage('remote') || error) })
+          .always(function () { deferred.resolve(errors)})
+      })
+    } else deferred.resolve(errors)
+
+    return deferred.promise()
+  }
+
+  Validator.prototype.validate = function () {
+    var delay = this.options.delay
+
+    this.options.delay = 0
+    this.$element.find(':input').trigger('input')
+    this.options.delay = delay
+
+    return this
+  }
+
+  Validator.prototype.showErrors = function ($el) {
+    var method = this.options.html ? 'html' : 'text'
+
+    this.defer($el, function () {
+      var $group = $el.closest('.form-group')
+      var $block = $group.find('.help-block.with-errors')
+      var errors = $el.data('bs.validator.errors')
+
+      if (!errors.length) return
+
+      errors = $('<ul/>')
+        .addClass('list-unstyled')
+        .append($.map(errors, function (error) { return $('<li/>')[method](error) }))
+
+      $block.data('bs.validator.originalContent') === undefined && $block.data('bs.validator.originalContent', $block.html())
+      $block.empty().append(errors)
+
+      $group.addClass('has-error')
+    })
+  }
+
+  Validator.prototype.clearErrors = function ($el) {
+    var $group = $el.closest('.form-group')
+    var $block = $group.find('.help-block.with-errors')
+
+    $block.html($block.data('bs.validator.originalContent'))
+    $group.removeClass('has-error')
+  }
+
+  Validator.prototype.hasErrors = function () {
+    function fieldErrors() {
+      return !!($(this).data('bs.validator.errors') || []).length
+    }
+
+    return !!this.$element.find(':input:enabled').filter(fieldErrors).length
+  }
+
+  Validator.prototype.isIncomplete = function () {
+    function fieldIncomplete() {
+      return this.type === 'checkbox' ? !this.checked                                   :
+             this.type === 'radio'    ? !$('[name="' + this.name + '"]:checked').length :
+                                        $.trim(this.value) === ''
+    }
+
+    return !!this.$element.find(':input[required]:enabled').filter(fieldIncomplete).length
+  }
+
+  Validator.prototype.onSubmit = function (e) {
+    this.validate()
+    if (this.isIncomplete() || this.hasErrors()) e.preventDefault()
+  }
+
+  Validator.prototype.toggleSubmit = function () {
+    if(!this.options.disable) return
+    var $btn = this.$element.find('input[type="submit"], button[type="submit"]')
+    $btn.toggleClass('disabled', this.isIncomplete() || this.hasErrors())
+      .css({'pointer-events': 'all', 'cursor': 'pointer'})
+  }
+
+  Validator.prototype.defer = function ($el, callback) {
+    if (!this.options.delay) return callback()
+    window.clearTimeout($el.data('bs.validator.timeout'))
+    $el.data('bs.validator.timeout', window.setTimeout(callback, this.options.delay))
+  }
+
+  Validator.prototype.destroy = function () {
+    this.$element
+      .removeAttr('novalidate')
+      .removeData('bs.validator')
+      .off('.bs.validator')
+
+    this.$element.find(':input')
+      .removeData(['bs.validator.errors', 'bs.validator.deferred', 'bs.validator.timeout'])
+      .off('.bs.validator')
+
+    this.$element.find('.help-block.with-errors').each(function () {
+      var $this = $(this)
+      var originalContent = $this.data('bs.validator.originalContent')
+
+      $this
+        .removeData('bs.validator.originalContent')
+        .html(originalContent)
+    })
+
+    this.$element.find('input[type="submit"], button[type="submit"]').removeClass('disabled')
+
+    this.$element.find('.has-error').removeClass('has-error')
+
+    return this
+  }
+
+  // VALIDATOR PLUGIN DEFINITION
+  // ===========================
+
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var options = $.extend({}, Validator.DEFAULTS, $this.data(), typeof option == 'object' && option)
+      var data    = $this.data('bs.validator')
+
+      if (!data && option == 'destroy') return
+      if (!data) $this.data('bs.validator', (data = new Validator(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.validator
+
+  $.fn.validator             = Plugin
+  $.fn.validator.Constructor = Validator
+
+
+  // VALIDATOR NO CONFLICT
+  // =====================
+
+  $.fn.validator.noConflict = function () {
+    $.fn.validator = old
+    return this
+  }
+
+
+  // VALIDATOR DATA-API
+  // ==================
+
+  $(window).on('load', function () {
+    $('form[data-toggle="validator"]').each(function () {
+      var $form = $(this)
+      Plugin.call($form, $form.data())
+    })
+  })
+
+}(jQuery);
+
+}).call(global, module, undefined, undefined);
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":8,"jquery":9}],4:[function(require,module,exports){
 var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
@@ -33,18 +326,19 @@ module.exports=Backbone.Model.extend({
 	}
 });
 
-},{"./init":4}],4:[function(require,module,exports){
+},{"./init":5}],5:[function(require,module,exports){
 /*
 	responsible for loading bootstrap,jQuery,Backbone and any Backbone plugins if required
 */
 
 var $=require('jquery');
 var bootstrap=require('bootstrap');
+var bootstrapValidator=require('bootstrap-validator');
 var Backbone=require('Backbone');
 Backbone.$=$;
 
 module.exports=Backbone;
-},{"Backbone":5,"bootstrap":7,"jquery":8}],5:[function(require,module,exports){
+},{"Backbone":6,"bootstrap":8,"bootstrap-validator":3,"jquery":9}],6:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -1654,7 +1948,7 @@ module.exports=Backbone;
 
 }));
 
-},{"underscore":6}],6:[function(require,module,exports){
+},{"underscore":7}],7:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -3071,7 +3365,7 @@ module.exports=Backbone;
   }
 }.call(this));
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -5400,7 +5694,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":8}],8:[function(require,module,exports){
+},{"jquery":9}],9:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/

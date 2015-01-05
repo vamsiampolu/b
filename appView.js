@@ -1,17 +1,30 @@
 var Backbone=require('./init');
-module.exports=Backbone.View.extend({
+var $=require('jquery');
+var Contact=require('./contactModel.js');
+var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
 		console.log('Inside initialize');
 		this.$createForm=this.$('#contact-create-form');
-		console.log(this.$createForm);
 	},
-	isValid:function isValid(){
-		console.log("Inside isValid");
-		console.log($(this));
-		$(this).is(':invalid').addClass('has-error');
+	submitForm:function submitCreateForm(e){
+		e.preventDefault();
+		var data={};
+		$('#contact-create-form').find('input').each(function(){
+			var dataMapping={
+				text:'name',
+				tel:'phone',
+				email:'email'
+			};
+			var key=dataMapping[$(this).attr('type')];
+			data[key]=$(this).val(); 
+		});
+		var model=new Contact(data);
+		console.log(model.toJSON());
 	},
 	events:{
-		'#contact-create-form input blur':'isValid'
+		'click #contact-create-form button':'submitForm'
 	}
 });
+
+module.exports=new appView();

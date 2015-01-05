@@ -25,7 +25,8 @@
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
-     "backbone":"./node_modules/backbone/backbone.js"
+     "backbone":"./node_modules/backbone/backbone.js",
+     "bootstrap-validator":"./bootstrap-validator-master/dist/validator.js"
   },
   "browserify-shim": {
     "bootstrap": {
@@ -36,6 +37,9 @@
     "backbone":{
       "depends":["jquery:$"],
       "exports":"Backbone"
+    },
+    "bootstrap-validator":{
+      "depends":["jquery:jQuery","bootstrap"]
     }
   }
 }

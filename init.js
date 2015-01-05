@@ -4,6 +4,7 @@
 
 var $=require('jquery');
 var bootstrap=require('bootstrap');
+var bootstrapValidator=require('bootstrap-validator');
 var Backbone=require('Backbone');
 Backbone.$=$;
 
