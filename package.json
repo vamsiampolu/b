@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.1",
-    "jquery": "^2.1.3"
+    "jquery": "^2.1.3",
+    "semantic-ui": "^1.5.2"
   },
   "browserify": {
     "transform": [
@@ -23,13 +24,18 @@
     ]
   },
   "browser": {
-    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
+    "semantic-ui":"./node_modules/semantic-ui/dist/semantic.js"
   },
   "browserify-shim": {
     "bootstrap": {
       "depends": [
         "jquery:jQuery"
       ]
+    },
+    "semantic-ui":{
+      "depends":["jquery:jQuery"]
+        
     }
   }
 }
