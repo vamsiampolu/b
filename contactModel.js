@@ -1,4 +1,4 @@
-var Backbone=require('init');
+var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
 	defaults:{
