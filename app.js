@@ -1,4 +1,3 @@
-var $=require('jquery');
-var bootstrap=require('bootstrap');
-/*now to test the working of bootstrap,build a navbar with css and a menu item that opens a modal*/
-
+var Contact=require('contactModel');
+var mrdoe=new Contact();
+console.log(mrdoe.toJSON());
