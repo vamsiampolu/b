@@ -1,14 +1,15 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Contact=require('./contactModel');
 var AppView=require('./appView');
-
+var ContactCollection=require('./contactCollection');
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());
 
-},{"./appView":2,"./contactModel":4}],2:[function(require,module,exports){
+},{"./appView":2,"./contactCollection":4,"./contactModel":5}],2:[function(require,module,exports){
 var Backbone=require('./init');
 var $=require('jquery');
 var Contact=require('./contactModel.js');
+var ContactCollection=require('./contactCollection');
 var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
@@ -29,6 +30,7 @@ var appView=Backbone.View.extend({
 		});
 		var model=new Contact(data);
 		console.log(model.toJSON());
+		ContactCollection.add(model);
 	},
 	events:{
 		'click #contact-create-form button':'submitForm'
@@ -36,7 +38,7 @@ var appView=Backbone.View.extend({
 });
 
 module.exports=new appView();
-},{"./contactModel.js":4,"./init":5,"jquery":9}],3:[function(require,module,exports){
+},{"./contactCollection":4,"./contactModel.js":5,"./init":6,"jquery":10}],3:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -315,7 +317,22 @@ require("e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js");
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":8,"jquery":9}],4:[function(require,module,exports){
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":9,"jquery":10}],4:[function(require,module,exports){
+var Backbone=require('./init');
+var Contact=require('./contactModel');
+var Collection=Backbone.Collection.extend({
+	model:Contact,
+	initialize:function initContactCollection(){
+		console.log("Contact Collection has been created");
+		this.on('add',function(models){
+			console.log("New contacts have been added");
+			console.log(models);
+		})
+	}
+});
+
+module.exports=new Collection();
+},{"./contactModel":5,"./init":6}],5:[function(require,module,exports){
 var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
@@ -326,7 +343,7 @@ module.exports=Backbone.Model.extend({
 	}
 });
 
-},{"./init":5}],5:[function(require,module,exports){
+},{"./init":6}],6:[function(require,module,exports){
 /*
 	responsible for loading bootstrap,jQuery,Backbone and any Backbone plugins if required
 */
@@ -338,7 +355,7 @@ var Backbone=require('Backbone');
 Backbone.$=$;
 
 module.exports=Backbone;
-},{"Backbone":6,"bootstrap":8,"bootstrap-validator":3,"jquery":9}],6:[function(require,module,exports){
+},{"Backbone":7,"bootstrap":9,"bootstrap-validator":3,"jquery":10}],7:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -1948,7 +1965,7 @@ module.exports=Backbone;
 
 }));
 
-},{"underscore":7}],7:[function(require,module,exports){
+},{"underscore":8}],8:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -3365,7 +3382,7 @@ module.exports=Backbone;
   }
 }.call(this));
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -5694,7 +5711,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":9}],9:[function(require,module,exports){
+},{"jquery":10}],10:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
