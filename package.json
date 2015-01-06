@@ -20,13 +20,16 @@
   },
   "browserify": {
     "transform": [
-      "browserify-shim"
+      "browserify-shim",
+      "hbsfy"
     ]
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
      "backbone":"./node_modules/backbone/backbone.js",
-     "bootstrap-validator":"./bootstrap-validator-master/dist/validator.js"
+     "bootstrap-validator":"./bootstrap-validator-master/dist/validator.js",
+     "bootcards":"./bootcards-master/dist/js/bootcards.js",
+     "Backbone.actAs.Paginatable":"./Backbone.actAs.Paginatable-master/src/Backbone.actAs.Paginatable.js"
   },
   "browserify-shim": {
     "bootstrap": {
@@ -40,6 +43,12 @@
     },
     "bootstrap-validator":{
       "depends":["jquery:jQuery","bootstrap"]
+    },
+    "bootcards":{
+      "depends":["jquery:$","bootstrap"]
+    },
+    "Backbone.actAs.Paginatable":{
+      "depends":["backbone:Backbone"]
     }
   }
 }

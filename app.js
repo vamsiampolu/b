@@ -1,5 +1,7 @@
 var Contact=require('./contactModel');
 var AppView=require('./appView');
-var ContactCollection=require('./contactCollection');
+
+var ContactCollectionView=require('./contactCollectionView');
+var contactList=new ContactCollectionView();
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());

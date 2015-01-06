@@ -1,20 +1,40 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Backbone=require('./init');
+var Contact=require('./contactModel');
+
+var Collection=Backbone.Collection.extend({
+	model:Contact,
+	initialize:function initContactCollection(){
+		console.log("Contact Collection has been created");
+	}
+});
+
+module.exports=Collection;
+},{"./contactModel":9,"./init":11}],2:[function(require,module,exports){
 var Contact=require('./contactModel');
 var AppView=require('./appView');
-var ContactCollection=require('./contactCollection');
+
+var ContactCollectionView=require('./contactCollectionView');
+var contactList=new ContactCollectionView();
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());
 
-},{"./appView":2,"./contactCollection":4,"./contactModel":5}],2:[function(require,module,exports){
+},{"./appView":3,"./contactCollectionView":8,"./contactModel":9}],3:[function(require,module,exports){
 var Backbone=require('./init');
 var $=require('jquery');
 var Contact=require('./contactModel.js');
 var ContactCollection=require('./contactCollection');
+var collection=new ContactCollection();
+var ContactCollectionView=require('./contactCollectionView');
+var contactList=new ContactCollectionView({
+	collection:collection
+		});
 var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
 		console.log('Inside initialize');
 		this.$createForm=this.$('#contact-create-form');
+
 	},
 	submitForm:function submitCreateForm(e){
 		e.preventDefault();
@@ -30,7 +50,7 @@ var appView=Backbone.View.extend({
 		});
 		var model=new Contact(data);
 		console.log(model.toJSON());
-		ContactCollection.add(model);
+		collection.add(model);
 	},
 	events:{
 		'click #contact-create-form button':'submitForm'
@@ -38,7 +58,620 @@ var appView=Backbone.View.extend({
 });
 
 module.exports=new appView();
-},{"./contactCollection":4,"./contactModel.js":5,"./init":6,"jquery":10}],3:[function(require,module,exports){
+},{"./contactCollection":7,"./contactCollectionView":8,"./contactModel.js":9,"./init":11,"jquery":23}],4:[function(require,module,exports){
+(function (global){
+
+; $ = global.$ = require("jquery");
+require("e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js");
+;__browserify_shim_require__=require;(function browserifyShim(module, define, require) {
+var bootcards = bootcards || {
+
+    portraitModeEnabled : false,
+    _isXS : null,
+    isFullScreen : false
+
+};
+
+bootcards.init = function( _options ) {
+
+    this.isFullScreen = ('standalone' in navigator && navigator.standalone);
+
+    $(document).ready( function() {
+
+        Bootcards.init(_options);
+
+        Bootcards.OffCanvas.init();
+
+        if (Bootcards.options.enableTabletPortraitMode) {
+
+           bootcards._initTabletPortraitMode();
+
+        }
+
+        if (Bootcards.options.disableRubberBanding) {
+
+            bootcards.disableRubberBanding();
+        }
+
+    } );
+
+    if (this.isFullScreen && 
+        _options.disableBreakoutSelector ) {
+
+        /*
+         * If an app on iOS is added to the home screen and a standard (non ajax)
+         * link is clicked, it tends to break-out out of full-screen mode
+         * This code helps to prevent that.
+         * 
+         * To use: add the break-out class to the options object used to initializ
+         * Bootcards and add the same class to any link you want to trigger this
+         * behaviour on (normally: all non-ajax links)
+         */
+        $(document).on(
+            "click",
+            _options.disableBreakoutSelector,
+            function( event ){
+                event.preventDefault();
+                location.href = $(event.target).prop("href");
+            }
+        );
+
+    }
+
+
+};
+
+bootcards.isXS = function() {
+
+    if (this._isXS === null ) {
+
+        //check if we're in the Bootstrap XS environment
+        var $check = $("<div class='visible-xs'>").appendTo($("body"));
+        this._isXS = $check.is(":visible");
+        $check.remove();
+
+    }
+
+    return this._isXS;
+};
+
+/*
+ * Disable rubberbanding effect in iOS.
+ * Based on the 'Baking Soda Paste' technique written by Armagan Amcalar at
+ * http://blog.armaganamcalar.com/post/70847348271/baking-soda-paste
+ */
+bootcards.disableRubberBanding = function() {
+   document.body.addEventListener('touchstart', function() {
+        document.body.addEventListener('touchmove', function moveListener(e) {
+            document.body.removeEventListener('touchmove', moveListener);
+
+            var el = e.target;
+
+            do {
+
+                var h = parseInt(window.getComputedStyle(el, null).height, 10);
+                var sH = el.scrollHeight;
+
+                if (h < sH) {
+                    return;
+                }
+            } while (el != document.body && el.parentElement != document.body && (el = el.parentElement));
+
+            e.preventDefault();
+        });
+    });
+
+};
+
+
+
+/*
+ * Initialize an off-canvas menu. This takes 3 arguments:
+ * - the off canvas element to slide in
+ * - the main content area to push away when the off canvas element slides in
+ * - a boolean indicating if the off canvas menu should be hidden when the main content area is clicked
+ * 
+ * An off canvas menu is required for the portrait-single-pane mode
+ *
+ */
+
+var Bootcards = ( function() {
+
+    this.$mainContentEl = null;
+    this.options = null;
+
+    return {
+
+        init : function(_options) {
+            this.$mainContentEl = $('.bootcards-container');
+            this.options = $.extend({}, Bootcards.DEFAULTS, _options);
+        }
+
+    };
+
+})();
+
+Bootcards.DEFAULTS = {
+    offCanvasHideOnMainClick : false,
+    offCanvasBackdrop : false,
+    enableTabletPortraitMode : false,
+    disableRubberBanding : false,
+    disableBreakoutSelector : null
+};
+
+//OffCanvas module
+(function (Bootcards) {
+
+    Bootcards.OffCanvas = {
+
+        $backdrop : null,
+        $toggleEl : null,
+        $menuEl : null,
+        $menuTitleEl : null,
+        offCanvasHideOnMainClick : false,
+        offCanvasBackdrop : false,
+
+        init : function() {
+            this.offCanvasHideOnMainClick = Bootcards.options.offCanvasHideOnMainClick;
+            this.offCanvasBackdrop = Bootcards.options.offCanvasBackdrop;
+            this.$toggleEl = $('[data-toggle=offcanvas]');
+            this.$menuEl = $('.offcanvas');
+
+            if (this.$menuEl.length>0 && this.$toggleEl.length>0) {
+
+                this.$toggleEl.on("click", function() {
+                    Bootcards.OffCanvas.toggle();
+                });
+
+            }
+
+            //add handler to body to hide the offcanvas when clicking
+            if (this.offCanvasHideOnMainClick && Bootcards.$mainContentEl) {
+                Bootcards.$mainContentEl.on("click", function() {
+                    Bootcards.OffCanvas.hide();
+                });
+            }
+
+        },
+
+        toggle : function() {
+            if (this.$menuEl.hasClass('active') ) {        //hide
+                this.hide();
+            } else {     
+                this.show();
+            }
+        },
+
+        show : function() {
+
+            //set opacity here to keep the menu button from keeping the hover state
+            this.showBackdrop();
+
+            this.$toggleEl.css('opacity', '');
+            this.$menuEl.addClass("active");
+
+            if (this.offCanvasHideOnMainClick && Bootcards.$mainContentEl) {
+                Bootcards.$mainContentEl.addClass("active-left");
+            }
+
+
+        },
+
+        hide : function() {
+            this.hideBackdrop();
+
+            if (this.$toggleEl) { this.$toggleEl.css('opacity', '1'); }
+            if (this.$menuEl) { this.$menuEl.removeClass("active"); }
+
+            if (this.offCanvasHideOnMainClick && Bootcards.$mainContentEl) {
+                Bootcards.$mainContentEl.removeClass("active-left");
+            }
+
+            if (this.$menuTitleEl) { this.$menuTitleEl.removeClass('active'); }
+
+        },
+
+        showBackdrop : function() {
+            if (!this.offCanvasBackdrop) { return; }
+            this.$backdrop = $('<div class="modal-backdrop fade in" />')
+                .appendTo( Bootcards.$mainContentEl );
+        },
+
+        hideBackdrop : function() {
+            if (!this.offCanvasBackdrop) { return; }
+            //remove the backdrop
+            this.$backdrop && this.$backdrop.remove();
+            this.$backdrop = null;
+        },
+
+        showToggleEl : function() {
+            if (this.$toggleEl) {
+                this.$toggleEl.show();
+            }
+        },
+
+        hideToggleEl : function() {
+            if (this.$toggleEl) {
+                this.$toggleEl.hide();
+            }
+        },
+
+        insertToggleButton : function(target) {
+
+            //create the title element for the menu offcanvas, insert it before the menu offcanvas
+            this.$menuTitleEl = $("<div class='offcanvas-list offcanvas-list-title'>"  +
+                "<span>Menu</span></div>");
+            this.$menuEl.before( this.$menuTitleEl );
+
+            //clone the button to show/hide the menu in the list title
+            this.$toggleEl.clone(false)
+                .prependTo(target)
+                .on("click", function() {
+                    Bootcards.OffCanvas.$menuEl.toggleClass("active");
+                    Bootcards.OffCanvas.$menuTitleEl.toggleClass("active");
+                })
+                .children("i")
+                    .removeClass('fa-bars')
+                    .addClass('fa-angle-left');
+        }
+
+    };
+    
+    return Bootcards;
+ 
+})(Bootcards);
+
+bootcards.enablePortraitMode = function() {
+
+    //don't activate on desktop or smartphones
+    if ( typeof window.orientation == 'undefined' || bootcards.isXS() ) {
+        return false;
+    } else {
+        return true;
+    }
+
+};
+
+
+bootcards._initTabletPortraitMode = function() {
+
+    if ( typeof window.orientation == 'undefined' || bootcards.isXS() ) {
+        return;
+    }
+    
+    bootcards.portraitModeEnabled = true;
+
+    $(window)
+        .on( 'resize', function() { 
+            setTimeout( function() { 
+                bootcards._setOrientation(false);
+            } , 250);
+        } )
+        .on( 'load', bootcards._setOrientation(true) );
+
+};
+
+bootcards._setOrientation = function(init) {
+
+    if ( !bootcards.portraitModeEnabled ) {
+        return;
+    }
+
+    var isPortrait = ($(window).width() > $(window).height())? false : true;
+
+    //on rotation: hide the offcanvas
+    Bootcards.OffCanvas.hide();
+
+    bootcards._initListEl();
+    bootcards._initCardsEl();
+ 
+    if (isPortrait) {
+
+        //portrait
+
+        //no list found
+        if (bootcards.listEl.length === 0) {
+            //no list found (anymore), enable the off canvas toggle (might have been hidden) and abort
+
+            Bootcards.OffCanvas.showToggleEl();
+            return;
+        }
+
+        //immediately hide the list on load in portrait mode
+        if (init) {
+            bootcards.listEl.hide();
+        }
+
+        //set the column to full width
+        bootcards.cardsEl
+            .removeClass(bootcards.cardsColClass)
+            .addClass('col-xs-12');
+
+        //hide the az picker
+        $('.bootcards-az-picker').hide();
+
+        if (!bootcards.listOffcanvasToggle) {
+            //create the list title & toggle elements
+
+             //create the button that shows/hides the list
+            bootcards.listOffcanvasToggle = $('<button type="button" class="btn btn-default pull-left offcanvaslist-toggle">' +
+                '<i class="fa fa-lg fa-angle-left"></i><span>' + bootcards.listTitle + '</span>' +
+                '</button>')
+                    .on("click", function() {
+
+                        if (bootcards.listTitleEl.hasClass("active") ) {
+                            Bootcards.OffCanvas.hideBackdrop();
+                        } else {
+                            Bootcards.OffCanvas.showBackdrop();
+                        }
+
+                        //on click: show the list & title
+                        bootcards.listEl.toggleClass("active");
+                        bootcards.listTitleEl.toggleClass("active");
+                
+                    });
+
+            //create the title element of the list offcanvas
+            bootcards.listTitleEl = $("<div class='offcanvas-list offcanvas-list-title'>"  +
+               "<span>" + bootcards.listTitle + "</span></div>");
+
+            if (Bootcards.OffCanvas.$toggleEl) {
+                //if we have an offcanvas: add the toggle button to the list
+
+                Bootcards.OffCanvas.insertToggleButton( bootcards.listTitleEl );
+
+            }
+
+            //add the title element and the toggle button to the top navbar
+           $('.navbar-header')
+               .after(
+                    bootcards.listTitleEl, bootcards.listOffcanvasToggle);   
+
+            //hide the list & list title when to body is clicked
+            Bootcards.$mainContentEl.on("click", function() {
+                
+                bootcards.listEl.removeClass('active');
+                bootcards.listTitleEl.removeClass('active'); 
+                Bootcards.OffCanvas.$menuTitleEl.removeClass('active');
+                Bootcards.OffCanvas.hideBackdrop();
+
+            });
+            
+            bootcards.listEl.on("click", function() {
+
+                bootcards.listEl.removeClass('active');
+                bootcards.listTitleEl.removeClass('active');
+                Bootcards.OffCanvas.hideBackdrop();
+
+            });
+
+            //increase the width of the menu: set it to the same size as the list
+            if ( Bootcards.OffCanvas.$menuEl ) {
+                Bootcards.OffCanvas.$menuEl
+                    .addClass('offcanvas-list')
+                    .on("click", function() {
+
+                        //hide the menu on click 
+                        var $this = $(this);
+                        $this.removeClass('active');
+                        Bootcards.OffCanvas.hide();
+                        //if (bootcards.offCanvasMenuTitleEl) { bootcards.offCanvasMenuTitleEl.removeClass('active'); }
+                        if (bootcards.listEl) { bootcards.listEl.removeClass('active'); }
+                        if (bootcards.listTitleEl) { bootcards.listTitleEl.removeClass('active'); }
+
+                    });
+            }
+
+        }
+
+        //hide the menu button
+        Bootcards.OffCanvas.hideToggleEl();
+
+        //show the button to toggle the list
+        bootcards.listOffcanvasToggle.show();
+
+        bootcards.listEl
+            .removeClass(bootcards.listColClass)
+            .addClass('offcanvas-list')
+            .show();
+
+    } else {
+
+        //landscape
+
+        //show the menu button
+        Bootcards.OffCanvas.showToggleEl();
+
+        //show the list again
+        if (bootcards.listEl && bootcards.listEl.hasClass('offcanvas-list') ) {
+
+            bootcards.listEl
+                .removeClass('offcanvas-list active')
+                .addClass(bootcards.listColClass)
+                .show();
+
+            /*
+             * deal with a iOS 8 issue: after rotating back to portrait,
+             * the list el remains in a (partly) offscreen position
+             * note that we need the timer: if we try to do this in 1 step, it fails
+             */
+            bootcards.listEl.css('overflow', 'hidden');
+            setTimeout( function() {
+                bootcards.listEl.css('overflow-y', 'auto');
+            }, 300);
+        }
+
+        //hide the button to show the list, remove the list & title
+        if ( bootcards.listOffcanvasToggle ) {
+            bootcards.listOffcanvasToggle.hide();
+            bootcards.listTitleEl.removeClass("active");
+        }
+
+        if (bootcards.cardsEl) {   
+            bootcards.cardsEl
+                .removeClass('col-xs-12')
+                .addClass( bootcards.cardsColClass );
+        }
+
+        $('.bootcards-az-picker').show();
+
+    }
+
+};
+
+//get the list element and it's classes
+bootcards._initListEl = function() {
+
+    if (bootcards.listEl != null) {
+        return bootcards.listEl;
+    }
+            
+    bootcards.listEl = $('.bootcards-list');
+    bootcards.listColClass = '';
+
+    if ( bootcards.listEl.length > 0 ) {
+            
+        bootcards.listTitle = bootcards.listEl.data('title') || 'List';
+
+        $.each(bootcards.listEl.prop('class').split(' '), function(idx, value) {
+            if (value.indexOf('col')===0) {
+                bootcards.listColClass += value + ' ';
+            }
+        });
+
+    }
+
+};
+
+bootcards._initCardsEl = function() {
+
+    if (bootcards.cardsEl != null) {
+        return bootcards.cardsEl;
+    }
+
+    bootcards.cardsEl = $('.bootcards-cards');
+    bootcards.cardsColClass = '';
+
+    if ( bootcards.cardsEl.length > 0 ) {
+
+        $.each(bootcards.cardsEl.prop('class').split(' '), function(idx, value) {
+            if (value.indexOf('col')===0) {
+                bootcards.cardsColClass += value + ' ';
+            }
+        });
+    }
+
+};
+
+//initialize the AZ picker
+bootcards.initAZPicker = function( target ) {
+
+    var azPicker = $(target);
+    
+    if (azPicker.length > 0) {
+    
+        // Register the letter click events
+        $("a", azPicker).off().on('click', function(event) {
+            
+            var $this = $(this);
+    
+            event.stopPropagation();
+            bootcards._jumpToLetter($this, event);
+            return false;
+            
+        });
+        
+        //move the az picker to a different location so we can give it a fixed position
+        var $list = azPicker.parents(".bootcards-list");
+
+        if ( $list.length > 0) {
+            
+            //determine the width of the list column
+            var classList = $list.attr('class').split(/\s+/);
+            var colClass = "";
+            $.each( classList, function(index, entry) {
+                if (entry.indexOf('col-') ===0 ) {
+                    colClass = entry;
+                    return;
+                }
+                
+            });
+            
+            //translate the column name to one of the Bootstrap 'push' classes
+            var colSize = colClass.substring( colClass.lastIndexOf('-') + 1 );
+            var colPushClass = colClass.substring( 0, colClass.lastIndexOf('-')) + "-push-" + colSize;
+            
+            //move the picker as a direct child of the main bootcards container so we can give it fixed positioning
+            azPicker
+                .appendTo( $('.bootcards-container') )
+                .addClass(colPushClass);
+        
+        }
+        
+    }
+    
+};
+
+//jump to a specific letter in the list
+bootcards._jumpToLetter = function(letterelement, event) {
+    
+    var $list = $('#list');
+    
+    $list.animate( {
+        scrollTop : 0
+    }, 0);
+    
+    var letter = letterelement.text().toLowerCase();
+    var sel = "#list .list-group a";
+    if ($(".bootcards-list-subheading").length > 0){
+        sel = ".bootcards-list-subheading";
+    }
+    
+    var $sel = $(sel);
+    
+    var scrolled = false;   
+    $sel.each( function(idx, entry) {
+        var $entry = $(entry);
+        
+        var summary = "";
+        if ($entry.prop('tagName').toLowerCase() == "a"){
+            summary = $entry.find("h4").text();
+        }else{
+            summary = $entry.text();
+        }
+        
+        var firstletter = summary.substring(0, 1).toLowerCase();
+        var scrollTop = null;
+        
+        if (firstletter == letter) {
+            scrollTop = $entry.offset().top - 60;
+        } else if (firstletter > letter) {
+            scrollTop = $entry.offset().top - 120;
+        }
+
+        if (scrollTop !== null) {
+            $list.animate( {
+                scrollTop : scrollTop
+            }, 0);
+            scrolled = true;
+            return false; 
+        }
+    });
+    
+    if (!scrolled) {
+
+        var $last = $( $sel[$sel.length-1] );
+        $list.animate( {
+            scrollTop : $last.offset().top - 120
+        }, 0);
+    }
+    
+};
+
+}).call(global, module, undefined, undefined);
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":14,"jquery":23}],5:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -317,22 +950,47 @@ require("e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js");
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":9,"jquery":10}],4:[function(require,module,exports){
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":14,"jquery":23}],6:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  return "<div class=\"bootcard-cards\">\r\n	<div class=\"panel panel-success\">\r\n		<div class=\"panel-heading\">\r\n			<div class=\"panel-title\">\r\n				<span class=\"glyphicon glyphicon-user\"></span>\r\n					"
+    + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
+    + "\r\n			</div>\r\n			<div class=\"pull-right\">\r\n				<span class=\"glyphicon glyphicon-remove\"></span>\r\n			</div>\r\n		</div>\r\n		<div class=\"list-group\">\r\n			<div class=\"list-group-item\">\r\n				<p class=\"list-group-item-text\">Phone </p>\r\n				<h4 class=\"list-group-item-heading\">"
+    + escapeExpression(((helper = (helper = helpers.phone || (depth0 != null ? depth0.phone : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"phone","hash":{},"data":data}) : helper)))
+    + "</h4>\r\n			</div>\r\n			<div class=\"list-group-item\">\r\n				<p class=\"list-group-item-text\">Email</p>\r\n				<h4 class=\"list-group-item-heading\">"
+    + escapeExpression(((helper = (helper = helpers.email || (depth0 != null ? depth0.email : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"email","hash":{},"data":data}) : helper)))
+    + "</h4>\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>		";
+},"useData":true});
+
+},{"hbsfy/runtime":22}],7:[function(require,module,exports){
+arguments[4][1][0].apply(exports,arguments)
+},{"./contactModel":9,"./init":11,"dup":1}],8:[function(require,module,exports){
 var Backbone=require('./init');
-var Contact=require('./contactModel');
-var Collection=Backbone.Collection.extend({
-	model:Contact,
-	initialize:function initContactCollection(){
-		console.log("Contact Collection has been created");
-		this.on('add',function(models){
-			console.log("New contacts have been added");
-			console.log(models);
-		})
+var $=require('jquery');
+var ContactView=require('./contactModelView');
+var ContactCollection=require('./ContactCollection');
+//commented...will use it later...
+//var actAsPaginatable=require('Backbone.actAs.paginatable')
+var view=Backbone.View.extend({
+	el:'#display-contacts-view',
+	collection:ContactCollection,
+	initialize:function initCollectionView(){
+		console.log("Inside collection view");
+		this.listenTo(this.collection,'add',this.addContact);	
+	},
+	addContact:function addContact(model){
+		console.log("Inside addContact method of collection view");
+		var m_view=new ContactView({model:model});
+		var m_$el= m_view.render().$el;
+		console.log(m_$el);
+		this.$el.append(m_$el);
 	}
 });
 
-module.exports=new Collection();
-},{"./contactModel":5,"./init":6}],5:[function(require,module,exports){
+module.exports=view;
+},{"./ContactCollection":1,"./contactModelView":10,"./init":11,"jquery":23}],9:[function(require,module,exports){
 var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
@@ -343,7 +1001,29 @@ module.exports=Backbone.Model.extend({
 	}
 });
 
-},{"./init":6}],6:[function(require,module,exports){
+},{"./init":11}],10:[function(require,module,exports){
+var Backbone=require('./init');
+var Contact=require('./contactModel');
+var $=require('jquery');
+var template=require('./contactCard.hbs');
+var view=Backbone.View.extend({
+	model:Contact,
+	className:'list-group-item',
+	initialize:function(){
+		console.log('Inside contact model view');
+		this.render();
+	},
+	render:function(){
+		console.log('Inside contact view render method');
+		var html=template(this.model.toJSON());
+		this.$el.html(html);
+		console.log(this.$el.html());
+		return this;
+	}
+});
+
+module.exports=view;
+},{"./contactCard.hbs":6,"./contactModel":9,"./init":11,"jquery":23}],11:[function(require,module,exports){
 /*
 	responsible for loading bootstrap,jQuery,Backbone and any Backbone plugins if required
 */
@@ -351,11 +1031,12 @@ module.exports=Backbone.Model.extend({
 var $=require('jquery');
 var bootstrap=require('bootstrap');
 var bootstrapValidator=require('bootstrap-validator');
+var bootcards=require('bootcards');
 var Backbone=require('Backbone');
 Backbone.$=$;
 
 module.exports=Backbone;
-},{"Backbone":7,"bootstrap":9,"bootstrap-validator":3,"jquery":10}],7:[function(require,module,exports){
+},{"Backbone":12,"bootcards":4,"bootstrap":14,"bootstrap-validator":5,"jquery":23}],12:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -1965,7 +2646,7 @@ module.exports=Backbone;
 
 }));
 
-},{"underscore":8}],8:[function(require,module,exports){
+},{"underscore":13}],13:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -3382,7 +4063,7 @@ module.exports=Backbone;
   }
 }.call(this));
 
-},{}],9:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -5711,7 +6392,607 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":10}],10:[function(require,module,exports){
+},{"jquery":23}],15:[function(require,module,exports){
+"use strict";
+/*globals Handlebars: true */
+var base = require("./handlebars/base");
+
+// Each of these augment the Handlebars object. No need to setup here.
+// (This is done to easily share code between commonjs and browse envs)
+var SafeString = require("./handlebars/safe-string")["default"];
+var Exception = require("./handlebars/exception")["default"];
+var Utils = require("./handlebars/utils");
+var runtime = require("./handlebars/runtime");
+
+// For compatibility and usage outside of module systems, make the Handlebars object a namespace
+var create = function() {
+  var hb = new base.HandlebarsEnvironment();
+
+  Utils.extend(hb, base);
+  hb.SafeString = SafeString;
+  hb.Exception = Exception;
+  hb.Utils = Utils;
+  hb.escapeExpression = Utils.escapeExpression;
+
+  hb.VM = runtime;
+  hb.template = function(spec) {
+    return runtime.template(spec, hb);
+  };
+
+  return hb;
+};
+
+var Handlebars = create();
+Handlebars.create = create;
+
+Handlebars['default'] = Handlebars;
+
+exports["default"] = Handlebars;
+},{"./handlebars/base":16,"./handlebars/exception":17,"./handlebars/runtime":18,"./handlebars/safe-string":19,"./handlebars/utils":20}],16:[function(require,module,exports){
+"use strict";
+var Utils = require("./utils");
+var Exception = require("./exception")["default"];
+
+var VERSION = "2.0.0";
+exports.VERSION = VERSION;var COMPILER_REVISION = 6;
+exports.COMPILER_REVISION = COMPILER_REVISION;
+var REVISION_CHANGES = {
+  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
+  2: '== 1.0.0-rc.3',
+  3: '== 1.0.0-rc.4',
+  4: '== 1.x.x',
+  5: '== 2.0.0-alpha.x',
+  6: '>= 2.0.0-beta.1'
+};
+exports.REVISION_CHANGES = REVISION_CHANGES;
+var isArray = Utils.isArray,
+    isFunction = Utils.isFunction,
+    toString = Utils.toString,
+    objectType = '[object Object]';
+
+function HandlebarsEnvironment(helpers, partials) {
+  this.helpers = helpers || {};
+  this.partials = partials || {};
+
+  registerDefaultHelpers(this);
+}
+
+exports.HandlebarsEnvironment = HandlebarsEnvironment;HandlebarsEnvironment.prototype = {
+  constructor: HandlebarsEnvironment,
+
+  logger: logger,
+  log: log,
+
+  registerHelper: function(name, fn) {
+    if (toString.call(name) === objectType) {
+      if (fn) { throw new Exception('Arg not supported with multiple helpers'); }
+      Utils.extend(this.helpers, name);
+    } else {
+      this.helpers[name] = fn;
+    }
+  },
+  unregisterHelper: function(name) {
+    delete this.helpers[name];
+  },
+
+  registerPartial: function(name, partial) {
+    if (toString.call(name) === objectType) {
+      Utils.extend(this.partials,  name);
+    } else {
+      this.partials[name] = partial;
+    }
+  },
+  unregisterPartial: function(name) {
+    delete this.partials[name];
+  }
+};
+
+function registerDefaultHelpers(instance) {
+  instance.registerHelper('helperMissing', function(/* [args, ]options */) {
+    if(arguments.length === 1) {
+      // A missing field in a {{foo}} constuct.
+      return undefined;
+    } else {
+      // Someone is actually trying to call something, blow up.
+      throw new Exception("Missing helper: '" + arguments[arguments.length-1].name + "'");
+    }
+  });
+
+  instance.registerHelper('blockHelperMissing', function(context, options) {
+    var inverse = options.inverse,
+        fn = options.fn;
+
+    if(context === true) {
+      return fn(this);
+    } else if(context === false || context == null) {
+      return inverse(this);
+    } else if (isArray(context)) {
+      if(context.length > 0) {
+        if (options.ids) {
+          options.ids = [options.name];
+        }
+
+        return instance.helpers.each(context, options);
+      } else {
+        return inverse(this);
+      }
+    } else {
+      if (options.data && options.ids) {
+        var data = createFrame(options.data);
+        data.contextPath = Utils.appendContextPath(options.data.contextPath, options.name);
+        options = {data: data};
+      }
+
+      return fn(context, options);
+    }
+  });
+
+  instance.registerHelper('each', function(context, options) {
+    if (!options) {
+      throw new Exception('Must pass iterator to #each');
+    }
+
+    var fn = options.fn, inverse = options.inverse;
+    var i = 0, ret = "", data;
+
+    var contextPath;
+    if (options.data && options.ids) {
+      contextPath = Utils.appendContextPath(options.data.contextPath, options.ids[0]) + '.';
+    }
+
+    if (isFunction(context)) { context = context.call(this); }
+
+    if (options.data) {
+      data = createFrame(options.data);
+    }
+
+    if(context && typeof context === 'object') {
+      if (isArray(context)) {
+        for(var j = context.length; i<j; i++) {
+          if (data) {
+            data.index = i;
+            data.first = (i === 0);
+            data.last  = (i === (context.length-1));
+
+            if (contextPath) {
+              data.contextPath = contextPath + i;
+            }
+          }
+          ret = ret + fn(context[i], { data: data });
+        }
+      } else {
+        for(var key in context) {
+          if(context.hasOwnProperty(key)) {
+            if(data) {
+              data.key = key;
+              data.index = i;
+              data.first = (i === 0);
+
+              if (contextPath) {
+                data.contextPath = contextPath + key;
+              }
+            }
+            ret = ret + fn(context[key], {data: data});
+            i++;
+          }
+        }
+      }
+    }
+
+    if(i === 0){
+      ret = inverse(this);
+    }
+
+    return ret;
+  });
+
+  instance.registerHelper('if', function(conditional, options) {
+    if (isFunction(conditional)) { conditional = conditional.call(this); }
+
+    // Default behavior is to render the positive path if the value is truthy and not empty.
+    // The `includeZero` option may be set to treat the condtional as purely not empty based on the
+    // behavior of isEmpty. Effectively this determines if 0 is handled by the positive path or negative.
+    if ((!options.hash.includeZero && !conditional) || Utils.isEmpty(conditional)) {
+      return options.inverse(this);
+    } else {
+      return options.fn(this);
+    }
+  });
+
+  instance.registerHelper('unless', function(conditional, options) {
+    return instance.helpers['if'].call(this, conditional, {fn: options.inverse, inverse: options.fn, hash: options.hash});
+  });
+
+  instance.registerHelper('with', function(context, options) {
+    if (isFunction(context)) { context = context.call(this); }
+
+    var fn = options.fn;
+
+    if (!Utils.isEmpty(context)) {
+      if (options.data && options.ids) {
+        var data = createFrame(options.data);
+        data.contextPath = Utils.appendContextPath(options.data.contextPath, options.ids[0]);
+        options = {data:data};
+      }
+
+      return fn(context, options);
+    } else {
+      return options.inverse(this);
+    }
+  });
+
+  instance.registerHelper('log', function(message, options) {
+    var level = options.data && options.data.level != null ? parseInt(options.data.level, 10) : 1;
+    instance.log(level, message);
+  });
+
+  instance.registerHelper('lookup', function(obj, field) {
+    return obj && obj[field];
+  });
+}
+
+var logger = {
+  methodMap: { 0: 'debug', 1: 'info', 2: 'warn', 3: 'error' },
+
+  // State enum
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3,
+  level: 3,
+
+  // can be overridden in the host environment
+  log: function(level, message) {
+    if (logger.level <= level) {
+      var method = logger.methodMap[level];
+      if (typeof console !== 'undefined' && console[method]) {
+        console[method].call(console, message);
+      }
+    }
+  }
+};
+exports.logger = logger;
+var log = logger.log;
+exports.log = log;
+var createFrame = function(object) {
+  var frame = Utils.extend({}, object);
+  frame._parent = object;
+  return frame;
+};
+exports.createFrame = createFrame;
+},{"./exception":17,"./utils":20}],17:[function(require,module,exports){
+"use strict";
+
+var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
+
+function Exception(message, node) {
+  var line;
+  if (node && node.firstLine) {
+    line = node.firstLine;
+
+    message += ' - ' + line + ':' + node.firstColumn;
+  }
+
+  var tmp = Error.prototype.constructor.call(this, message);
+
+  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
+  for (var idx = 0; idx < errorProps.length; idx++) {
+    this[errorProps[idx]] = tmp[errorProps[idx]];
+  }
+
+  if (line) {
+    this.lineNumber = line;
+    this.column = node.firstColumn;
+  }
+}
+
+Exception.prototype = new Error();
+
+exports["default"] = Exception;
+},{}],18:[function(require,module,exports){
+"use strict";
+var Utils = require("./utils");
+var Exception = require("./exception")["default"];
+var COMPILER_REVISION = require("./base").COMPILER_REVISION;
+var REVISION_CHANGES = require("./base").REVISION_CHANGES;
+var createFrame = require("./base").createFrame;
+
+function checkRevision(compilerInfo) {
+  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
+      currentRevision = COMPILER_REVISION;
+
+  if (compilerRevision !== currentRevision) {
+    if (compilerRevision < currentRevision) {
+      var runtimeVersions = REVISION_CHANGES[currentRevision],
+          compilerVersions = REVISION_CHANGES[compilerRevision];
+      throw new Exception("Template was precompiled with an older version of Handlebars than the current runtime. "+
+            "Please update your precompiler to a newer version ("+runtimeVersions+") or downgrade your runtime to an older version ("+compilerVersions+").");
+    } else {
+      // Use the embedded version info since the runtime doesn't know about this revision yet
+      throw new Exception("Template was precompiled with a newer version of Handlebars than the current runtime. "+
+            "Please update your runtime to a newer version ("+compilerInfo[1]+").");
+    }
+  }
+}
+
+exports.checkRevision = checkRevision;// TODO: Remove this line and break up compilePartial
+
+function template(templateSpec, env) {
+  /* istanbul ignore next */
+  if (!env) {
+    throw new Exception("No environment passed to template");
+  }
+  if (!templateSpec || !templateSpec.main) {
+    throw new Exception('Unknown template object: ' + typeof templateSpec);
+  }
+
+  // Note: Using env.VM references rather than local var references throughout this section to allow
+  // for external users to override these as psuedo-supported APIs.
+  env.VM.checkRevision(templateSpec.compiler);
+
+  var invokePartialWrapper = function(partial, indent, name, context, hash, helpers, partials, data, depths) {
+    if (hash) {
+      context = Utils.extend({}, context, hash);
+    }
+
+    var result = env.VM.invokePartial.call(this, partial, name, context, helpers, partials, data, depths);
+
+    if (result == null && env.compile) {
+      var options = { helpers: helpers, partials: partials, data: data, depths: depths };
+      partials[name] = env.compile(partial, { data: data !== undefined, compat: templateSpec.compat }, env);
+      result = partials[name](context, options);
+    }
+    if (result != null) {
+      if (indent) {
+        var lines = result.split('\n');
+        for (var i = 0, l = lines.length; i < l; i++) {
+          if (!lines[i] && i + 1 === l) {
+            break;
+          }
+
+          lines[i] = indent + lines[i];
+        }
+        result = lines.join('\n');
+      }
+      return result;
+    } else {
+      throw new Exception("The partial " + name + " could not be compiled when running in runtime-only mode");
+    }
+  };
+
+  // Just add water
+  var container = {
+    lookup: function(depths, name) {
+      var len = depths.length;
+      for (var i = 0; i < len; i++) {
+        if (depths[i] && depths[i][name] != null) {
+          return depths[i][name];
+        }
+      }
+    },
+    lambda: function(current, context) {
+      return typeof current === 'function' ? current.call(context) : current;
+    },
+
+    escapeExpression: Utils.escapeExpression,
+    invokePartial: invokePartialWrapper,
+
+    fn: function(i) {
+      return templateSpec[i];
+    },
+
+    programs: [],
+    program: function(i, data, depths) {
+      var programWrapper = this.programs[i],
+          fn = this.fn(i);
+      if (data || depths) {
+        programWrapper = program(this, i, fn, data, depths);
+      } else if (!programWrapper) {
+        programWrapper = this.programs[i] = program(this, i, fn);
+      }
+      return programWrapper;
+    },
+
+    data: function(data, depth) {
+      while (data && depth--) {
+        data = data._parent;
+      }
+      return data;
+    },
+    merge: function(param, common) {
+      var ret = param || common;
+
+      if (param && common && (param !== common)) {
+        ret = Utils.extend({}, common, param);
+      }
+
+      return ret;
+    },
+
+    noop: env.VM.noop,
+    compilerInfo: templateSpec.compiler
+  };
+
+  var ret = function(context, options) {
+    options = options || {};
+    var data = options.data;
+
+    ret._setup(options);
+    if (!options.partial && templateSpec.useData) {
+      data = initData(context, data);
+    }
+    var depths;
+    if (templateSpec.useDepths) {
+      depths = options.depths ? [context].concat(options.depths) : [context];
+    }
+
+    return templateSpec.main.call(container, context, container.helpers, container.partials, data, depths);
+  };
+  ret.isTop = true;
+
+  ret._setup = function(options) {
+    if (!options.partial) {
+      container.helpers = container.merge(options.helpers, env.helpers);
+
+      if (templateSpec.usePartial) {
+        container.partials = container.merge(options.partials, env.partials);
+      }
+    } else {
+      container.helpers = options.helpers;
+      container.partials = options.partials;
+    }
+  };
+
+  ret._child = function(i, data, depths) {
+    if (templateSpec.useDepths && !depths) {
+      throw new Exception('must pass parent depths');
+    }
+
+    return program(container, i, templateSpec[i], data, depths);
+  };
+  return ret;
+}
+
+exports.template = template;function program(container, i, fn, data, depths) {
+  var prog = function(context, options) {
+    options = options || {};
+
+    return fn.call(container, context, container.helpers, container.partials, options.data || data, depths && [context].concat(depths));
+  };
+  prog.program = i;
+  prog.depth = depths ? depths.length : 0;
+  return prog;
+}
+
+exports.program = program;function invokePartial(partial, name, context, helpers, partials, data, depths) {
+  var options = { partial: true, helpers: helpers, partials: partials, data: data, depths: depths };
+
+  if(partial === undefined) {
+    throw new Exception("The partial " + name + " could not be found");
+  } else if(partial instanceof Function) {
+    return partial(context, options);
+  }
+}
+
+exports.invokePartial = invokePartial;function noop() { return ""; }
+
+exports.noop = noop;function initData(context, data) {
+  if (!data || !('root' in data)) {
+    data = data ? createFrame(data) : {};
+    data.root = context;
+  }
+  return data;
+}
+},{"./base":16,"./exception":17,"./utils":20}],19:[function(require,module,exports){
+"use strict";
+// Build out our basic SafeString type
+function SafeString(string) {
+  this.string = string;
+}
+
+SafeString.prototype.toString = function() {
+  return "" + this.string;
+};
+
+exports["default"] = SafeString;
+},{}],20:[function(require,module,exports){
+"use strict";
+/*jshint -W004 */
+var SafeString = require("./safe-string")["default"];
+
+var escape = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "`": "&#x60;"
+};
+
+var badChars = /[&<>"'`]/g;
+var possible = /[&<>"'`]/;
+
+function escapeChar(chr) {
+  return escape[chr];
+}
+
+function extend(obj /* , ...source */) {
+  for (var i = 1; i < arguments.length; i++) {
+    for (var key in arguments[i]) {
+      if (Object.prototype.hasOwnProperty.call(arguments[i], key)) {
+        obj[key] = arguments[i][key];
+      }
+    }
+  }
+
+  return obj;
+}
+
+exports.extend = extend;var toString = Object.prototype.toString;
+exports.toString = toString;
+// Sourced from lodash
+// https://github.com/bestiejs/lodash/blob/master/LICENSE.txt
+var isFunction = function(value) {
+  return typeof value === 'function';
+};
+// fallback for older versions of Chrome and Safari
+/* istanbul ignore next */
+if (isFunction(/x/)) {
+  isFunction = function(value) {
+    return typeof value === 'function' && toString.call(value) === '[object Function]';
+  };
+}
+var isFunction;
+exports.isFunction = isFunction;
+/* istanbul ignore next */
+var isArray = Array.isArray || function(value) {
+  return (value && typeof value === 'object') ? toString.call(value) === '[object Array]' : false;
+};
+exports.isArray = isArray;
+
+function escapeExpression(string) {
+  // don't escape SafeStrings, since they're already safe
+  if (string instanceof SafeString) {
+    return string.toString();
+  } else if (string == null) {
+    return "";
+  } else if (!string) {
+    return string + '';
+  }
+
+  // Force a string conversion as this will be done by the append regardless and
+  // the regex test will do this transparently behind the scenes, causing issues if
+  // an object's to string has escaped characters in it.
+  string = "" + string;
+
+  if(!possible.test(string)) { return string; }
+  return string.replace(badChars, escapeChar);
+}
+
+exports.escapeExpression = escapeExpression;function isEmpty(value) {
+  if (!value && value !== 0) {
+    return true;
+  } else if (isArray(value) && value.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+exports.isEmpty = isEmpty;function appendContextPath(contextPath, id) {
+  return (contextPath ? contextPath + '.' : '') + id;
+}
+
+exports.appendContextPath = appendContextPath;
+},{"./safe-string":19}],21:[function(require,module,exports){
+// Create a simple path alias to allow browserify to resolve
+// the runtime on a supported path.
+module.exports = require('./dist/cjs/handlebars.runtime');
+
+},{"./dist/cjs/handlebars.runtime":15}],22:[function(require,module,exports){
+module.exports = require("handlebars/runtime")["default"];
+
+},{"handlebars/runtime":21}],23:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
@@ -14918,4 +16199,4 @@ return jQuery;
 
 }));
 
-},{}]},{},[1]);
+},{}]},{},[2]);
