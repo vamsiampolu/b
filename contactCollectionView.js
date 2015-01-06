@@ -1,12 +1,10 @@
 var Backbone=require('./init');
 var $=require('jquery');
 var ContactView=require('./contactModelView');
-var ContactCollection=require('./ContactCollection');
 //commented...will use it later...
 //var actAsPaginatable=require('Backbone.actAs.paginatable')
 var view=Backbone.View.extend({
 	el:'#display-contacts-view',
-	collection:ContactCollection,
 	initialize:function initCollectionView(){
 		console.log("Inside collection view");
 		this.listenTo(this.collection,'add',this.addContact);	

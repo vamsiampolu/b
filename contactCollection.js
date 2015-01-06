@@ -8,4 +8,4 @@ var Collection=Backbone.Collection.extend({
 	}
 });
 
-module.exports=Collection;
+module.exports=new Collection();

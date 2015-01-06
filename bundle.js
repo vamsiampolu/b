@@ -1,40 +1,25 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Backbone=require('./init');
-var Contact=require('./contactModel');
-
-var Collection=Backbone.Collection.extend({
-	model:Contact,
-	initialize:function initContactCollection(){
-		console.log("Contact Collection has been created");
-	}
-});
-
-module.exports=Collection;
-},{"./contactModel":9,"./init":11}],2:[function(require,module,exports){
 var Contact=require('./contactModel');
 var AppView=require('./appView');
-
+var ContactCollection=require('./contactCollection');
 var ContactCollectionView=require('./contactCollectionView');
-var contactList=new ContactCollectionView();
+var contactList=new ContactCollectionView({
+	collection:ContactCollection
+});
 var mrdoe=new Contact();
 console.log(mrdoe.toJSON());
 
-},{"./appView":3,"./contactCollectionView":8,"./contactModel":9}],3:[function(require,module,exports){
+},{"./appView":2,"./contactCollection":6,"./contactCollectionView":7,"./contactModel":8}],2:[function(require,module,exports){
 var Backbone=require('./init');
 var $=require('jquery');
 var Contact=require('./contactModel.js');
 var ContactCollection=require('./contactCollection');
-var collection=new ContactCollection();
-var ContactCollectionView=require('./contactCollectionView');
-var contactList=new ContactCollectionView({
-	collection:collection
-		});
 var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
 		console.log('Inside initialize');
 		this.$createForm=this.$('#contact-create-form');
-
+	
 	},
 	submitForm:function submitCreateForm(e){
 		e.preventDefault();
@@ -50,7 +35,7 @@ var appView=Backbone.View.extend({
 		});
 		var model=new Contact(data);
 		console.log(model.toJSON());
-		collection.add(model);
+		ContactCollection.add(model);
 	},
 	events:{
 		'click #contact-create-form button':'submitForm'
@@ -58,7 +43,7 @@ var appView=Backbone.View.extend({
 });
 
 module.exports=new appView();
-},{"./contactCollection":7,"./contactCollectionView":8,"./contactModel.js":9,"./init":11,"jquery":23}],4:[function(require,module,exports){
+},{"./contactCollection":6,"./contactModel.js":8,"./init":10,"jquery":22}],3:[function(require,module,exports){
 (function (global){
 
 ; $ = global.$ = require("jquery");
@@ -671,7 +656,7 @@ bootcards._jumpToLetter = function(letterelement, event) {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":14,"jquery":23}],5:[function(require,module,exports){
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":13,"jquery":22}],4:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -950,32 +935,40 @@ require("e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js");
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":14,"jquery":23}],6:[function(require,module,exports){
+},{"e:\\Do\\b\\node_modules\\bootstrap\\dist\\js\\bootstrap.js":13,"jquery":22}],5:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
-  return "<div class=\"bootcard-cards\">\r\n	<div class=\"panel panel-success\">\r\n		<div class=\"panel-heading\">\r\n			<div class=\"panel-title\">\r\n				<span class=\"glyphicon glyphicon-user\"></span>\r\n					"
+  return "<div class=\"bootcard-cards\">\r\n	<div class=\"panel panel-success\">\r\n		<div class=\"panel-heading\">\r\n			<div class=\"panel-title\">\r\n				<span class=\"glyphicon glyphicon-user\"></span>\r\n				"
     + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
-    + "\r\n			</div>\r\n			<div class=\"pull-right\">\r\n				<span class=\"glyphicon glyphicon-remove\"></span>\r\n			</div>\r\n		</div>\r\n		<div class=\"list-group\">\r\n			<div class=\"list-group-item\">\r\n				<p class=\"list-group-item-text\">Phone </p>\r\n				<h4 class=\"list-group-item-heading\">"
+    + "\r\n			</div>\r\n			<div class=\"pull-right contact-delete\">\r\n				<span class=\"glyphicon glyphicon-remove\"></span>\r\n			</div>\r\n		</div>\r\n		<div class=\"list-group\">\r\n			<div class=\"list-group-item\">\r\n				<p class=\"list-group-item-text\">Phone </p>\r\n				<h4 class=\"list-group-item-heading\">"
     + escapeExpression(((helper = (helper = helpers.phone || (depth0 != null ? depth0.phone : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"phone","hash":{},"data":data}) : helper)))
     + "</h4>\r\n			</div>\r\n			<div class=\"list-group-item\">\r\n				<p class=\"list-group-item-text\">Email</p>\r\n				<h4 class=\"list-group-item-heading\">"
     + escapeExpression(((helper = (helper = helpers.email || (depth0 != null ? depth0.email : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"email","hash":{},"data":data}) : helper)))
     + "</h4>\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>		";
 },"useData":true});
 
-},{"hbsfy/runtime":22}],7:[function(require,module,exports){
-arguments[4][1][0].apply(exports,arguments)
-},{"./contactModel":9,"./init":11,"dup":1}],8:[function(require,module,exports){
+},{"hbsfy/runtime":21}],6:[function(require,module,exports){
+var Backbone=require('./init');
+var Contact=require('./contactModel');
+
+var Collection=Backbone.Collection.extend({
+	model:Contact,
+	initialize:function initContactCollection(){
+		console.log("Contact Collection has been created");
+	}
+});
+
+module.exports=new Collection();
+},{"./contactModel":8,"./init":10}],7:[function(require,module,exports){
 var Backbone=require('./init');
 var $=require('jquery');
 var ContactView=require('./contactModelView');
-var ContactCollection=require('./ContactCollection');
 //commented...will use it later...
 //var actAsPaginatable=require('Backbone.actAs.paginatable')
 var view=Backbone.View.extend({
 	el:'#display-contacts-view',
-	collection:ContactCollection,
 	initialize:function initCollectionView(){
 		console.log("Inside collection view");
 		this.listenTo(this.collection,'add',this.addContact);	
@@ -990,7 +983,7 @@ var view=Backbone.View.extend({
 });
 
 module.exports=view;
-},{"./ContactCollection":1,"./contactModelView":10,"./init":11,"jquery":23}],9:[function(require,module,exports){
+},{"./contactModelView":9,"./init":10,"jquery":22}],8:[function(require,module,exports){
 var Backbone=require('./init');
 
 module.exports=Backbone.Model.extend({
@@ -1001,29 +994,36 @@ module.exports=Backbone.Model.extend({
 	}
 });
 
-},{"./init":11}],10:[function(require,module,exports){
+},{"./init":10}],9:[function(require,module,exports){
 var Backbone=require('./init');
 var Contact=require('./contactModel');
 var $=require('jquery');
 var template=require('./contactCard.hbs');
+var ContactCollection=require('./contactCollection');
 var view=Backbone.View.extend({
 	model:Contact,
 	className:'list-group-item',
 	initialize:function(){
-		console.log('Inside contact model view');
 		this.render();
 	},
 	render:function(){
 		console.log('Inside contact view render method');
 		var html=template(this.model.toJSON());
 		this.$el.html(html);
-		console.log(this.$el.html());
 		return this;
+	},
+	removeContact:function removeContact(){
+		console.log("Inside removeContact function");
+		this.model.destroy();
+		this.remove();
+	},
+	events:{
+		'click .contact-delete':'removeContact'
 	}
 });
 
 module.exports=view;
-},{"./contactCard.hbs":6,"./contactModel":9,"./init":11,"jquery":23}],11:[function(require,module,exports){
+},{"./contactCard.hbs":5,"./contactCollection":6,"./contactModel":8,"./init":10,"jquery":22}],10:[function(require,module,exports){
 /*
 	responsible for loading bootstrap,jQuery,Backbone and any Backbone plugins if required
 */
@@ -1036,7 +1036,7 @@ var Backbone=require('Backbone');
 Backbone.$=$;
 
 module.exports=Backbone;
-},{"Backbone":12,"bootcards":4,"bootstrap":14,"bootstrap-validator":5,"jquery":23}],12:[function(require,module,exports){
+},{"Backbone":11,"bootcards":3,"bootstrap":13,"bootstrap-validator":4,"jquery":22}],11:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -2646,7 +2646,7 @@ module.exports=Backbone;
 
 }));
 
-},{"underscore":13}],13:[function(require,module,exports){
+},{"underscore":12}],12:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -4063,7 +4063,7 @@ module.exports=Backbone;
   }
 }.call(this));
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -6392,7 +6392,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":23}],15:[function(require,module,exports){
+},{"jquery":22}],14:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -6428,7 +6428,7 @@ Handlebars.create = create;
 Handlebars['default'] = Handlebars;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":16,"./handlebars/exception":17,"./handlebars/runtime":18,"./handlebars/safe-string":19,"./handlebars/utils":20}],16:[function(require,module,exports){
+},{"./handlebars/base":15,"./handlebars/exception":16,"./handlebars/runtime":17,"./handlebars/safe-string":18,"./handlebars/utils":19}],15:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -6660,7 +6660,7 @@ var createFrame = function(object) {
   return frame;
 };
 exports.createFrame = createFrame;
-},{"./exception":17,"./utils":20}],17:[function(require,module,exports){
+},{"./exception":16,"./utils":19}],16:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -6689,7 +6689,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -6883,7 +6883,7 @@ exports.noop = noop;function initData(context, data) {
   }
   return data;
 }
-},{"./base":16,"./exception":17,"./utils":20}],19:[function(require,module,exports){
+},{"./base":15,"./exception":16,"./utils":19}],18:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -6895,7 +6895,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -6984,15 +6984,15 @@ exports.isEmpty = isEmpty;function appendContextPath(contextPath, id) {
 }
 
 exports.appendContextPath = appendContextPath;
-},{"./safe-string":19}],21:[function(require,module,exports){
+},{"./safe-string":18}],20:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime');
 
-},{"./dist/cjs/handlebars.runtime":15}],22:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":14}],21:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":21}],23:[function(require,module,exports){
+},{"handlebars/runtime":20}],22:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
@@ -16199,4 +16199,4 @@ return jQuery;
 
 }));
 
-},{}]},{},[2]);
+},{}]},{},[1]);

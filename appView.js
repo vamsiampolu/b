@@ -2,7 +2,6 @@ var Backbone=require('./init');
 var $=require('jquery');
 var Contact=require('./contactModel.js');
 var ContactCollection=require('./contactCollection');
-var collection=new ContactCollection();
 var appView=Backbone.View.extend({
 	el:'#app',
 	initialize:function initAppView(){
@@ -24,7 +23,7 @@ var appView=Backbone.View.extend({
 		});
 		var model=new Contact(data);
 		console.log(model.toJSON());
-		collection.add(model);
+		ContactCollection.add(model);
 	},
 	events:{
 		'click #contact-create-form button':'submitForm'
