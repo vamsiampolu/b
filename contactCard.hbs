@@ -5,8 +5,15 @@
 				<span class="glyphicon glyphicon-user"></span>
 				{{name}}
 			</div>
-			<div class="pull-right contact-delete">
-				<span class="glyphicon glyphicon-remove"></span>
+			<div class="pull-right contact-actions">
+				<div class="btn-group-sm" role="group">
+					<button type="button" class="btn btn-default btn-edit" data-toggle="modal" data-target="#contact-update-view">
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button>
+					<button type="button" class="btn btn-default btn-remove">
+						<span class="glyphicon glyphicon-remove" data-toggle="tooltip" title="Remove the contact"></span>
+					</button> 
+				</div>
 			</div>
 		</div>
 		<div class="list-group">

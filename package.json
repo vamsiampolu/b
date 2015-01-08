@@ -11,11 +11,15 @@
   "devDependencies": {
     "browserify": "^8.0.3",
     "browserify-shim": "^3.8.2",
-    "hbsfy": "^2.2.1"
+    "gulp": "^3.8.10",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^1.0.2",
+    "hbsfy": "^2.2.1",
+    "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
     "backbone": "^1.1.2",
-    "bootstrap": "^3.3.1",
+    "bootstrap": "^3.2.0",
     "jquery": "^2.1.3"
   },
   "browserify": {
@@ -26,10 +30,11 @@
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
-     "backbone":"./node_modules/backbone/backbone.js",
-     "bootstrap-validator":"./bootstrap-validator-master/dist/validator.js",
-     "bootcards":"./bootcards-master/dist/js/bootcards.js",
-     "Backbone.actAs.Paginatable":"./Backbone.actAs.Paginatable-master/src/Backbone.actAs.Paginatable.js"
+    "backbone": "./node_modules/backbone/backbone.js",
+    "bootstrap-validator": "./bootstrap-validator-master/dist/validator.js",
+    "bootcards": "./bootcards-master/dist/js/bootcards.js",
+    "Backbone.actAs.Paginatable": "./Backbone.actAs.Paginatable-master/src/Backbone.actAs.Paginatable.js",
+    "backbone-query": "./backbone_query-master/backbone-query.js"
   },
   "browserify-shim": {
     "bootstrap": {
@@ -37,18 +42,33 @@
         "jquery:jQuery"
       ]
     },
-    "backbone":{
-      "depends":["jquery:$"],
-      "exports":"Backbone"
+    "backbone": {
+      "depends": [
+        "jquery:$"
+      ],
+      "exports": "Backbone"
     },
-    "bootstrap-validator":{
-      "depends":["jquery:jQuery","bootstrap"]
+    "bootstrap-validator": {
+      "depends": [
+        "jquery:jQuery",
+        "bootstrap"
+      ]
     },
-    "bootcards":{
-      "depends":["jquery:$","bootstrap"]
+    "bootcards": {
+      "depends": [
+        "jquery:$",
+        "bootstrap"
+      ]
     },
-    "Backbone.actAs.Paginatable":{
-      "depends":["backbone:Backbone"]
+    "Backbone.actAs.Paginatable": {
+      "depends": [
+        "backbone:Backbone"
+      ]
+    },
+    "backbone-query": {
+      "depends": [
+        "backbone:Backbone"
+      ]
     }
   }
 }

@@ -2,6 +2,10 @@ body{
 	margin-top:70px;
 }
 
-.contact-delete{
+.contact-actions{
 	margin-top:-25px;
+}
+
+.search-container .input-group-addon{
+	width:auto;
 }

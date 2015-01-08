@@ -1,6 +1,7 @@
 var Backbone=require('./init');
 var $=require('jquery');
 var ContactView=require('./contactModelView');
+
 //commented...will use it later...
 //var actAsPaginatable=require('Backbone.actAs.paginatable')
 var view=Backbone.View.extend({
