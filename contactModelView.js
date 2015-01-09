@@ -24,11 +24,41 @@ var view=Backbone.View.extend({
 	askForUpdate:function()
 	{
 		//triggers an event which passes the model to the event handling function...
-		//called each time the update button is clicked...
-		this.trigger('update_requested',this.model);		
+		//called each time the update button is clicked
+		this.onUpdateRequested(this.model);	
 	},
 	updateContact:function(data){
 		this.model.set(data);
+	},
+	onUpdateRequested:function onUpdateRequested(model)
+	{
+		console.log("An update has been requested on the model here");
+		console.log(model.toJSON());
+		var $modal =$('#contact-update-view');
+		var $form = $('#contact-update-view form');
+		console.log($form);
+		var onEachInput = function onEachInput(){
+			var dataMapping={
+				text:'name',
+				tel:'phone',
+				email:'email'
+			};
+			var key=dataMapping[$(this).attr('type')];
+			var value=$(this).val();
+			console.log(key+" : "+value);
+			model.set(key,value);
+			$(this).val('');
+		};
+
+		var onFormSubmit = function onFormSubmit(event){
+			console.log(event);
+			event.preventDefault();//this should take effect...
+			console.log("Update has been submitted");
+			$form.find('input').each(onEachInput);
+			$modal.modal('hide');
+		};
+		
+		$form.find('button').on('click',onFormSubmit);
 	},
 	events:{
 		'click .contact-actions .btn-remove':'removeContact',
