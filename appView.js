@@ -20,11 +20,13 @@ var appView=Backbone.View.extend({
 			};
 			var key=dataMapping[$(this).attr('type')];
 			data[key]=$(this).val(); 
+			$(this).val('');
 		});
 		data.visible=true;
 		var model=new Contact(data);
 		console.log(model.toJSON());
 		ContactCollection.add(model);
+		
 	},
 	searchCollection:function searchCollection(){
 		console.log("Inside the search collection method");

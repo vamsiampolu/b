@@ -17,36 +17,6 @@ var view=Backbone.View.extend({
 		var m_$el= m_view.render().$el;
 		console.log(m_$el);
 		this.$el.append(m_$el);
-	},
-	onUpdateRequested:function onUpdateRequested(model)
-	{
-		console.log("An update has been requested on the model here");
-		console.log(model.toJSON());
-		var $modal =$('#contact-update-view');
-		var $form = $('#contact-update-view form');
-		console.log($form);
-		var onEachInput = function onEachInput(){
-			var dataMapping={
-				text:'name',
-				tel:'phone',
-				email:'email'
-			};
-			var key=dataMapping[$(this).attr('type')];
-			var value=$(this).val();
-			console.log(key+" : "+value);
-			model.set(key,value);
-			$(this).val('');
-		};
-
-		var onFormSubmit = function onFormSubmit(event){
-			console.log(event);
-			event.preventDefault();//this should take effect...
-			console.log("Update has been submitted");
-			$form.find('input').each(onEachInput);
-			$modal.modal('hide');
-		};
-		
-		$form.find('button').on('click',onFormSubmit);
 	}
 });
 
